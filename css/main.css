@@ -1,0 +1,39 @@
+/* Reset default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+matrix-element {
+    display: block;
+    margin-bottom: 20px;
+    border: 3px solid #ccc;
+}
+
+euler-transform {
+    display: block;
+    margin-bottom: 20px;
+    border: 3px solid #ccc;
+}
+
+/* Dark theme */
+body {
+    background-color: #222;
+    color: #fff;
+}
+
+matrix-element,
+euler-transform {
+    background-color: #333;
+    color: #fff;
+    border-color: #666;
+}

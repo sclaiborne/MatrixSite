@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Inverse</title>
+    <base href=".">
+</head>
+<body>
+    <h1>Matrix Inverse</h1>
+
+    <h2>Enter a 4x4 matrix:</h2>
+    <matrix-element class="input"></matrix-element>
+    <hr>
+    <h2>Inverse:</h2>
+    <matrix-element id="matrix-out" class="output">
+        <button onclick="copyOutputId('matrix-out')">Copy</button>
+    </matrix-element>
+    <h3>Euler:</h3>
+    <euler-transform class="output"></euler-transform>
+    
+    <link rel="stylesheet" href="css/main.css">
+    
+    <script src="js/matElements.js" type="module"></script>
+    <script src="js/matrix-inverse-app.js" type="text/javascript"></script>
+</body>
+</html>
