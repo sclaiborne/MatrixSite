@@ -37,6 +37,8 @@ class angleTypeSelect extends HTMLElement {
 }
 
 
+// Note: All matrix elements are expected to have the following methods:
+// matrix:three (getter and setter) of type three.Matrix4
 
 class MatrixElement extends HTMLElement {
     constructor() {
@@ -80,7 +82,7 @@ class MatrixElement extends HTMLElement {
     }
     _create_html() {
         var str = "";
-        var standardPattern = "[0-9]+\.?[0-9]*";
+        var standardPattern = "-?[0-9]+\.?[0-9]*";
         var bottomPatternZero = "[0]+\.?[0]*";
         var bottomPatternOne = "[1]+\.?[0]*";
         for (var i = 0; i < 4; i++) {
@@ -195,6 +197,55 @@ class MatrixElement extends HTMLElement {
             Number(this.shadowRoot.querySelector("[data-matrix='02']").value), Number(this.shadowRoot.querySelector("[data-matrix='12']").value), Number(this.shadowRoot.querySelector("[data-matrix='22']").value), Number(this.shadowRoot.querySelector("[data-matrix='32']").value),
             Number(this.shadowRoot.querySelector("[data-matrix='03']").value), Number(this.shadowRoot.querySelector("[data-matrix='13']").value), Number(this.shadowRoot.querySelector("[data-matrix='23']").value), Number(this.shadowRoot.querySelector("[data-matrix='33']").value)
         ]);
+    }
+}
+
+// WIP
+class QuaternionElement extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+            <style>
+                .quaternion {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    grid-gap: 10px;
+                }
+                input {
+                    min-width: 50px;
+                    padding: 5px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+            </style>
+            <div>
+                <slot></slot>
+                <div class="quaternion">
+                    <input data-quaternion='0' value="0">
+                    <input data-quaternion='1' value="0">
+                    <input data-quaternion='2' value="0">
+                    <input data-quaternion='3' value="0">
+                </div>
+            </div>
+        `;
+        this._create_html();
+        this.quaternion = new three.Quaternion();
+    }
+    set quaternion(quaternion) {
+        this._quaternion = quaternion;
+        this._set_html();
+        this.dispatchEvent(new Event("change"));
+    }
+    get quaternion() {
+        return this._quaternion;
+    }
+    get matrix() {
+        return new three.Matrix4().makeRotationFromQuaternion(this.quaternion);
+    }
+    set matrix(matrix) {
+        this.quaternion.setFromRotationMatrix(matrix);
+        this.dispatchEvent(new Event("change"));
     }
 }
 
@@ -339,6 +390,55 @@ class EulerTranslationElement extends HTMLElement {
     }
     static radianstoDegrees(radians) {
         return radians * 180 / Math.PI;
+    }
+}
+
+
+// Note: All Math Elements are expected to have the following methods:
+// calculate(matrix:three.Matrix4):three.Matrix4
+// matrix:three.Matrix4 (getter and setter)
+class MatrixMultiplyElement extends HTMLElement {
+    constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.shadowRoot.innerHTML = `
+            <style>
+                .matrix-multiply {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    grid-gap: 10px;
+                }
+                button {
+                    padding: 5px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                }
+            </style>
+            <div>
+                <slot></slot>
+                <div class="matrix-multiply">
+                    <matrix-element></matrix-element>
+                </div>
+            </div>
+        `;
+        this._matrixE = this.shadowRoot.querySelector("matrix-element");
+        this._matrixE.addEventListener("change", (e) => {
+            this.dispatchEvent(new Event("change", e));
+        });
+        this.order = "local";
+        
+    }
+    calculate(matrix) {
+        if(this.order == "world") {
+            return this._matrixE.matrix.multiply(matrix);
+        }
+        return matrix.multiply(this._matrix.matrix);
+    }
+    set matrix(matrix) {
+        this._matrixE.matrix = matrix;
+    }
+    get matrix() {
+        return this._matrixE.matrix;
     }
 }
 
